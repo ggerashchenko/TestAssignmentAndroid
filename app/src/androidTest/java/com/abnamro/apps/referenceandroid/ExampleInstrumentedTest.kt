@@ -4,12 +4,13 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.After
@@ -41,21 +42,29 @@ class ExampleInstrumentedTest {
     }
 
     @Test
+    fun testTextElementsAreDisplayedOnMainScreen() {
+        onView(withText("ReferenceAndroid"))
+            .check(matches(isDisplayed()))
+        onView(withText("Hello World!"))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
     fun testEnvelopFloatingButtonClick() {
-        Espresso.onView(ViewMatchers.withId(R.id.fab))
+        onView(withId(R.id.fab))
             .perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText("Replace with your own action"))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        onView(withText("Replace with your own action"))
+            .check(matches(isDisplayed()))
     }
 
     @Test
     fun testIntentToOpenSettingsActivity() {
         Intents.intending(IntentMatchers.hasComponent(SettingsActivity::class.java.name))
             .respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
-        Espresso.openActionBarOverflowOrOptionsMenu(
+        openActionBarOverflowOrOptionsMenu(
             ApplicationProvider.getApplicationContext<Context>()
         )
-        Espresso.onView(ViewMatchers.withText("Settings"))
+        onView(withText("Settings"))
             .perform(ViewActions.click())
         Intents.intended(IntentMatchers.hasComponent(SettingsActivity::class.java.name), Intents.times(1))
     }
